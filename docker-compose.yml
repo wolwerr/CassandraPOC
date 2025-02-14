@@ -1,0 +1,48 @@
+services:
+  cassandra:
+    image: cassandra:4.0
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_KEYSPACE: my_keyspace
+    networks:
+      - my_network
+    volumes:
+      - ./init.cql:/init.cql
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  cassandra-init:
+    image: cassandra:4.0
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    networks:
+      - my_network
+    volumes:
+      - ./init.cql:/init.cql
+    entrypoint: ["/bin/sh", "-c", "sleep 30 && cqlsh cassandra -f /init.cql"]
+
+  app:
+    build: .
+    container_name: my-spring-boot-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+    environment:
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_CASSANDRA_KEYSPACE_NAME: my_keyspace
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
