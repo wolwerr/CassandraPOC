@@ -2,15 +2,25 @@ CREATE KEYSPACE IF NOT EXISTS my_keyspace WITH replication = {'class': 'SimpleSt
 
 USE my_keyspace;
 
-CREATE TYPE IF NOT EXISTS address (
-                                      street TEXT,
-                                      city TEXT,
-                                      country TEXT
-                                  );
+CREATE TABLE IF NOT EXISTS address (
+                                       id UUID PRIMARY KEY,
+                                       street TEXT,
+                                       city TEXT,
+                                       country TEXT,
+                                       user_id UUID
+);
+
+CREATE TYPE IF NOT EXISTS phone (
+                                    phoneNumber TEXT,
+                                    phoneType TEXT
+                                );
 
 CREATE TABLE IF NOT EXISTS users (
                                      id UUID PRIMARY KEY,
                                      name TEXT,
+                                     age int,
                                      email TEXT,
-                                     address FROZEN<address>
+                                     address_id UUID,
+                                     phones list<frozen<phone>>
 );
+
