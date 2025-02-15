@@ -1,24 +1,19 @@
 package com.example.cassandra.models;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.UUID;
 
-@Table
+@Table("users")
 public class User {
-    @Id
     @PrimaryKey
     private UUID id;
     private String name;
     private String email;
-
-    @CassandraType(type = CassandraType.Name.UDT, userTypeName = "address")
     private Address address;
 
-    // Getters and Setters
+    // Getters and setters
     public UUID getId() {
         return id;
     }

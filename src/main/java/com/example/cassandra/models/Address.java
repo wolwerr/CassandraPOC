@@ -8,17 +8,7 @@ public class Address {
     private String city;
     private String country;
 
-    // Default constructor
-    public Address() {}
-
-    // Constructor with arguments
-    public Address(String street, String city, String country) {
-        this.street = street;
-        this.city = city;
-        this.country = country;
-    }
-
-    // Getters and Setters
+    // Getters and setters
     public String getStreet() {
         return street;
     }

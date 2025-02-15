@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
+import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
 
 import java.util.Arrays;
@@ -25,6 +26,11 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         return CqlSession.builder()
                 .withKeyspace(getKeyspaceName())
                 .build();
+    }
+
+    @Bean
+    public CassandraTemplate cassandraTemplate(CqlSession cqlSession) {
+        return new CassandraTemplate(cqlSession);
     }
 
     @Bean
