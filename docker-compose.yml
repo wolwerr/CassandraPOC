@@ -9,23 +9,13 @@ services:
     networks:
       - my_network
     volumes:
-      - ./init.cql:/init.cql
+      - ./data/init.cql:/init.cql
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
       interval: 30s
       timeout: 10s
       retries: 10
-
-  cassandra-init:
-    image: cassandra:4.0
-    depends_on:
-      cassandra:
-        condition: service_healthy
-    networks:
-      - my_network
-    volumes:
-      - ./init.cql:/init.cql
-    entrypoint: ["/bin/sh", "-c", "sleep 30 && cqlsh cassandra -f /init.cql"]
+    entrypoint: ["/bin/sh", "-c", "cassandra -R && sleep 60 && cqlsh -f /init.cql && tail -f /dev/null"]
 
   app:
     build: .
@@ -33,8 +23,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      cassandra-init:
-        condition: service_completed_successfully
+      cassandra:
+        condition: service_healthy
     environment:
       SPRING_CASSANDRA_CONTACT_POINTS: cassandra
       SPRING_CASSANDRA_PORT: 9042
